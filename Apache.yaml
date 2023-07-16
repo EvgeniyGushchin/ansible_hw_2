@@ -1,0 +1,10 @@
+---
+  
+- name: "Install Apache"
+  become: true
+  hosts: ubuntu
+  tags:
+  - apache
+  roles:
+  - name: my_apache
+    

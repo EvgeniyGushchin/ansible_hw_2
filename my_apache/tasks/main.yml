@@ -1,0 +1,34 @@
+---
+# tasks file for my_apache
+
+- name: Update repositories cache and install "apache2" package
+  apt:
+    name: apache2
+    update_cache: yes
+    state: present
+
+- set_fact:
+    my_devices: "{{ ansible_devices.keys()|
+                  reject('match', '^loop(.*)$')|
+                  list }}"
+
+- name: Add Index page
+  template:
+    src: "index.html.j2"
+    dest: "/var/www/html/index.html"
+
+- name: Apache2 service enabled
+  service:
+    name: apache2
+    enabled: true
+    state: started
+
+- name: Open firewall
+  ufw:
+    rule: allow
+    port: 80
+    proto: tcp
+
+- name: Check that we can connect to server
+  ansible.builtin.uri:
+    url: "http://{{ ansible_all_ipv4_addresses[0] }}"
